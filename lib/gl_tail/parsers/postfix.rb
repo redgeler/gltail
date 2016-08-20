@@ -53,8 +53,8 @@ class PostfixParser < Parser
       if from
         add_activity(:block => 'mail from', :name => from, :size => size.to_f/100000.0)
       end
-    elsif line.include?(' to=<')
-      if line.include?('relay=virtual')
+        elsif line.include?(' to=<')
+      if line.include?('relay=virtual') or line.include?('relay=local')
         # Incoming
         _, to, delay, status = /: to=<([^>]+)>, .*delay=([\d.]+).*status=([^ ]+)/.match(line).to_a
         add_activity(:block => 'mail to', :name => to, :size => delay.to_f/10.0, :type => 5, :color => [1.0, 0.0, 1.0, 1.0])
@@ -62,19 +62,7 @@ class PostfixParser < Parser
       else
         # Outgoing
         _, to, relay_host, delay, status = /: to=<([^>]+)>.*relay=([^\[,]+).*delay=([\d.]+).*status=([^ ]+)/.match(line).to_a
-        add_activity(:block => 'mail from', :name => to, :size => delay.to_f/10.0)
-        add_activity(:block => 'smtp', :name => relay_host, :size => delay.to_f/10.0)
-        add_activity(:block => 'status', :name => status, :size => delay.to_f/10.0, :type => 3)
-      end
-      if line.include?('relay=local')
-        # Incoming
-        _, to, delay, status = /: to=<([^>]+)>, .*delay=([\d.]+).*status=([^ ]+)/.match(line).to_a
-        add_activity(:block => 'mail to', :name => to, :size => delay.to_f/10.0, :type => 5, :color => [1.0, 0.0, 1.0, 1.0])
-        add_activity(:block => 'status', :name => 'received', :size => delay.to_f/10.0, :type => 3)
-      else
-        # Outgoing
-        _, to, relay_host, delay, status = /: to=<([^>]+)>.*relay=([^\[,]+).*delay=([\d.]+).*status=([^ ]+)/.match(line).to_a
-        add_activity(:block => 'mail from', :name => to, :size => delay.to_f/10.0)
+        add_activity(:block => 'mail to', :name => to, :size => delay.to_f/10.0)
         add_activity(:block => 'smtp', :name => relay_host, :size => delay.to_f/10.0)
         add_activity(:block => 'status', :name => status, :size => delay.to_f/10.0, :type => 3)
       end
