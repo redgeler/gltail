@@ -59,7 +59,7 @@ class PostfixParser < Parser
         _, to, delay, status = /: to=<([^>]+)>, .*delay=([\d.]+).*status=([^ ]+)/.match(line).to_a
         add_activity(:block => 'mail to', :name => to, :size => delay.to_f/10.0, :type => 5, :color => [1.0, 0.0, 1.0, 1.0])
         add_activity(:block => 'status', :name => 'received', :size => delay.to_f/10.0, :type => 3)
-      else
+      elseif ! line.include?(' relay=127.0.0.1') 
         # Outgoing
         _, to, relay_host, delay, status = /: to=<([^>]+)>.*relay=([^\[,]+).*delay=([\d.]+).*status=([^ ]+)/.match(line).to_a
         add_activity(:block => 'mail to', :name => to, :size => delay.to_f/10.0)
